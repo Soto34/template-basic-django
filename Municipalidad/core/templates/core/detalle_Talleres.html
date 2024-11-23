@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'core/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+        
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="{% static 'core/css/fontawesome.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/templatemo-edu-meeting.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/owl.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/lightbox.css' %}">
+
+    <link rel="stylesheet" href="{% static 'core/css/administracion.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+<body>
+    <div class="table-container">
+        <div class="table_header">
+            <h2>Detalles de los talleres</h2>
+            <div>
+                
+                <a href="{% url 'index' %}"><button class="add_new" type="button">Inicio</button></a>
+                <a href="{% url 'tallerAdd' %}"><button class="add_new" type="button">Agregar Taller</button></a>
+            </div>
+        </div>
+    
+        <div class="table_section">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>cant_horas</th>
+                        <th>descripcion</th>
+                        <th>fecha_inicio</th>
+                        <th>fecha_termino</th>
+                        <th>cant_min</th>
+                        <th>cant_max</th>
+                        <th>prom_evalua_taller</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aux in lista %}  
+                    <tr>
+                        <td>{{ aux.id }}</td>
+                        <td>{{ aux.nombre }}</td>
+                        <td>{{ aux.cant_horas }}</td>
+                        <td>{{ aux.descripcion }}</td>
+                        <td>{{ aux.fecha_inicio }}</td>
+                        <td>{{ aux.fecha_termino }}</td>
+                        <td>{{ aux.cant_min }}</td>
+                        <td>{{ aux.cant_max }}</td>
+                        <td>{{ aux.prom_evalua_taller }}</td>
+                        <td>
+                            
+                            <a href="{% url 'tallerUpdate' aux.id %}">
+                                <button type="button"><i class="fa-solid fa-pen-to-square"></i></button>
+                            </a>
+                
+                            <a href="{% url 'tallerDelete' aux.id %}">
+                                <button type="button" class="delete-button"><i class="fa-solid fa-trash"></i></button>
+                            </a>
+                            
+                        </td>
+                    </tr>
+                        
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+    
+</body>
+</html>
