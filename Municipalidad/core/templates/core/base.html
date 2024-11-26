@@ -30,26 +30,45 @@
                       <a href="{% url 'index' %}" class="logo">
                         Talleres Salud y Bienestar
                       </a>
+                      
                       <!-- ***** Logo End ***** -->
                       <!-- ***** Menu Start ***** -->
-                      <ul class="nav">
+                      <ul class="nav"> 
+                        {% if user.is_authenticated %}
+                          <li><button type="button" class="btn btn-danger">Bienvenido {{ user.username}}</button></li>
+                          <li><form action="{% url 'logout' %}" method="post">{% csrf_token %}<button type="submit" class="btn btn-danger">Cerrar sesion</button></form></li>
                           <li ><a href="{% url 'index' %}" >Inicio</a></li>
-                          <li><a href="meetings">Meetings</a></li>
-                          <li><a href="#">Iniciar sesión</a></li>
                           <li><a href="detalleTalleres">Detalles</a></li>
                           <li class="has-sub">
                               <a href="javascript:void(0)">Páginas</a>
                               <ul class="sub-menu">
-                                  <li><a href="meetings">Talleres Próximos</a></li>
-                                  <li><a href="meeting-details">Detalle del Taller</a></li>
+                                  <li><a href="#">Talleres Próximos</a></li>
+                                  <li><a href="#">Detalle del Taller</a></li>
                               </ul>
                           </li>
                           <li ><a href="#contact">Contacto</a></li> 
-                      </ul>        
+                      </ul>      
+                      {% else %}
+                          <li><button type="button" class="btn btn-danger">Bienvenido Invitado</button></li>
+                          <li ><a href="{% url 'index' %}" >Inicio</a></li>
+                          <li><a href="accounts/login">Iniciar sesión</a></li>
+                          <li><a href="detalleTalleres">Crud talleres</a></li>
+                          <li class="has-sub">
+                              <a href="javascript:void(0)">Páginas</a>
+                              <ul class="sub-menu">
+                                  <li><a href="#">Talleres Próximos</a></li>
+                                  <li><a href="#">Detalle del Taller</a></li>
+                              </ul>
+                          </li>
+                          <li ><a href="#contact">Contacto</a></li> 
+                      </ul>      
+                      {% endif%}
+                      
                       <a class='menu-trigger'>
                           <span>Menu</span>
                       </a>
-                      <!-- ***** Menu End ***** -->
+                      
+                      
                   </nav>
               </div>
           </div>

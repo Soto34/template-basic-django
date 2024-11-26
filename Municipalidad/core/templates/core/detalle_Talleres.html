@@ -63,7 +63,7 @@
                                 <button type="button"><i class="fa-solid fa-pen-to-square"></i></button>
                             </a>
                 
-                            <a href="{% url 'tallerDelete' aux.id %}">
+                            <a onclick="confirmarDelete({{ aux.id}})">
                                 <button type="button" class="delete-button"><i class="fa-solid fa-trash"></i></button>
                             </a>
                             
@@ -78,4 +78,7 @@
     </div>
     
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'core/vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'core/js/funcionalidades.js' %}"></script>
 </html>
