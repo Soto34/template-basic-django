@@ -23,11 +23,39 @@ class InscripcionForm(ModelForm):
         fields = '__all__'
 
 
-
-class CustomUserCreationForm(UserCreationForm):
+class CustomUserAndAdultoMayorForm(UserCreationForm):
+    # Campos adicionales del modelo adultoMayor
+    rut_adulto = forms.CharField(max_length=20, required=True)
+    p_nombre = forms.CharField(max_length=20, required=True)
+    s_nombre = forms.CharField(max_length=20, required=False)
+    p_apellido = forms.CharField(max_length=20, required=True)
+    s_apellido = forms.CharField(max_length=20, required=False)
+    direccion = forms.CharField(max_length=255, required=True)
+    fecha_nacimiento = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+    correo_electronico = forms.EmailField(max_length=100, required=True)
+    comprobante_domicilio = forms.FileField(required=False)
+    comuna = forms.ModelChoiceField(queryset=Comuna.objects.all(), required=True)
+    genero = forms.ModelChoiceField(queryset=Genero.objects.all(), required=True)
+    telefono = forms.IntegerField(required=True)
 
     class Meta:
         model = User
-        fields = ['username','first_name','last_name','email','password1','password2']
+        fields = [
+            'username',
+            'password1',
+            'password2',
+            'rut_adulto',
+            'p_nombre',
+            's_nombre',
+            'p_apellido',
+            's_apellido',
+            'direccion',
+            'fecha_nacimiento',
+            'correo_electronico',
+            'comprobante_domicilio',
+            'comuna',
+            'genero',
+            'telefono',
+        ]
 
-    
+

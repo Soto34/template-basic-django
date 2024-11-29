@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Adulto mayor</title>
+    <link rel="stylesheet" href="{% static 'core/css/crud.css' %}">
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'core/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="{% static 'core/css/fontawesome.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/templatemo-edu-meeting.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/owl.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/lightbox.css' %}">
+    
+</head>
+<body>
+    {% load crispy_forms_tags %}
+<div class="formulario">
+    <a href="{% url 'detalleAdultos' %}"><button class="btn btn-info" type="button">Volver</button></a>
+    <h2>Agregar Adulto Mayor</h2>
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form | crispy}}
+        </div>
+        <div class="form-actions">
+            <input class="btn btn-success" type="submit" value="Agregar">
+            <input class="btn btn-danger" type="reset" value="Limpiar">
+        </div>
+    </form>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'core/vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'core/js/funcionalidades.js' %}"></script>
+</html>

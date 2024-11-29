@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-1etuu+&#bi_2t@8f&i1$(t7+u=ogkd@i@wp84+ok@x@@us@i39
 DEBUG = True
 
 ALLOWED_HOSTS = []
+CSRF_COOKIE_SECURE = True  # Solo cambia esto a True si usas HTTPS
 
 
 # Application definition

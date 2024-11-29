@@ -1,4 +1,4 @@
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import render,redirect
 from .models import * 
 from .forms import *
@@ -21,7 +21,7 @@ def group_required(group_name):
         return _wrapped_view
     return decorator
 
-@login_required
+
 # Create your views here.
 def index(request):
     talleres = Taller.objects.all()
@@ -31,7 +31,7 @@ def index(request):
     return render(request, 'core/index.html',aux)
 
 
-
+#Talleres
 def tallerAdd(request):
     # Verificar si el usuario tiene permiso (staff o pertenece al grupo 'admin')
     if not user_in_group(request.user, 'funcionario'):
@@ -51,7 +51,6 @@ def tallerAdd(request):
             
 
     return render(request,'core/crud/add.html',aux)
-
 
 def tallerUpdate(request,id):
     # Verificar si el usuario tiene permiso (staff o pertenece al grupo 'admin')
@@ -97,18 +96,149 @@ def detalleTalleres(request):
     return render(request,'core/detalle_Talleres.html',aux)
 
 
+#Adultos
+def detalleAdultos(request):
+    # Obtener todos los adultos mayores
+    adultos_mayores = adultoMayor.objects.all()
+    aux = {
+        'lista': adultos_mayores
+    }
+    
+    # Pasar la lista de adultos mayores al template
+    return render(request, 'core/detalle_adultos.html', aux)
+
+def adultoAdd(request):
+    # Verificar permisos
+    if not user_in_group(request.user, 'funcionario'):
+        return HttpResponseForbidden("No tienes permisos para acceder a esta página.")
+
+    if request.method == 'POST':
+        form = CustomUserAndAdultoMayorForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Crear el usuario
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password1'])
+            user.save()
+
+            # Crear el objeto adultoMayor asociado
+            adulto_mayor = adultoMayor.objects.create(
+                user=user,
+                rut_adulto=form.cleaned_data['rut_adulto'],
+                p_nombre=form.cleaned_data['p_nombre'],
+                s_nombre=form.cleaned_data.get('s_nombre', ''),
+                p_apellido=form.cleaned_data['p_apellido'],
+                s_apellido=form.cleaned_data.get('s_apellido', ''),
+                direccion=form.cleaned_data['direccion'],
+                fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
+                correo_electronico=form.cleaned_data['correo_electronico'],
+                comprobante_domicilio=form.cleaned_data.get('comprobante_domicilio', None),
+                comuna=form.cleaned_data['comuna'],
+                genero=form.cleaned_data['genero'],
+                telefono=form.cleaned_data['telefono'],
+            )
+
+            return redirect('detalleAdultos')  # Redirigir a la lista de adultos
+        else:
+            return render(request, 'core/crud/add_adulto.html', {'form': form, 'ms': 'Error en el formulario'})
+
+    # GET: Mostrar formulario vacío
+    form = CustomUserAndAdultoMayorForm()
+    return render(request, 'core/crud/add_adulto.html', {'form': form})
+
+def adultoDelete(request, id):
+    # Verificar si el usuario tiene permiso (staff o pertenece al grupo 'admin')
+    if not user_in_group(request.user, 'funcionario'):
+        return HttpResponseForbidden("No tienes permisos para acceder a esta página.")
+
+    try:
+        adulto = adultoMayor.objects.get(id=id)
+        # Eliminar al usuario asociado si existe
+        if adulto.user:  # Asumiendo que el campo relacionado se llama 'usuario'
+            adulto.user.delete()
+        # Eliminar al adulto mayor
+        adulto.delete()
+
+    except adultoMayor.DoesNotExist:
+        return HttpResponseNotFound("El adulto mayor no existe.")
+    
+    return redirect(to="detalleAdultos")
+
+def adultoUpdate(request, id):
+    # Verificar permisos
+    if not user_in_group(request.user, 'funcionario'):
+        return HttpResponseForbidden("No tienes permisos para acceder a esta página.")
+    
+    try:
+        # Obtener el objeto adultoMayor
+        adulto = adultoMayor.objects.get(id=id)
+    except adultoMayor.DoesNotExist:
+        return HttpResponseNotFound("El adulto mayor no existe.")
+    
+    # Si el formulario es enviado (POST)
+    if request.method == 'POST':
+        form = CustomUserAndAdultoMayorForm(request.POST, request.FILES, instance=adulto)
+        if form.is_valid():
+            # Actualizar adultoMayor
+            adulto.rut_adulto = form.cleaned_data['rut_adulto']
+            adulto.p_nombre = form.cleaned_data['p_nombre']
+            adulto.s_nombre = form.cleaned_data.get('s_nombre', '')
+            adulto.p_apellido = form.cleaned_data['p_apellido']
+            adulto.s_apellido = form.cleaned_data.get('s_apellido', '')
+            adulto.direccion = form.cleaned_data['direccion']
+            adulto.fecha_nacimiento = form.cleaned_data['fecha_nacimiento']
+            adulto.correo_electronico = form.cleaned_data['correo_electronico']
+            adulto.comprobante_domicilio = form.cleaned_data.get('comprobante_domicilio', None)
+            adulto.comuna = form.cleaned_data['comuna']
+            adulto.genero = form.cleaned_data['genero']
+            adulto.telefono = form.cleaned_data['telefono']
+            adulto.save()
+
+            return redirect('detalleAdultos')  # Redirigir a la lista de adultos
+        else:
+            # Si el formulario no es válido, renderizarlo nuevamente con el mensaje de error
+            return render(request, 'core/crud/update_adulto.html', {'form': form, 'ms': 'Error en el formulario'})
+
+    # Si es un GET, mostrar el formulario con los datos actuales
+    form = CustomUserAndAdultoMayorForm(instance=adulto)
+    return render(request, 'core/crud/update_adulto.html', {'form': form})
+
 def register(request):
     aux = {
-        'form' : CustomUserCreationForm()
+        'form': CustomUserAndAdultoMayorForm()
     }
+    
     if request.method == 'POST':
-        formulario = CustomUserCreationForm(data=request.POST)
+        formulario = CustomUserAndAdultoMayorForm(data=request.POST, files=request.FILES)
+        
         if formulario.is_valid():
-            user = formulario.save()
+            # Guardar el usuario (User)
+            user = formulario.save(commit=False)  # No guardar aún el usuario
+            user.save()  # Guardar el usuario en la base de datos
+
+            # Crear el perfil de adultoMayor y asociarlo con el usuario
+            adulto_mayor = adultoMayor(
+                rut_adulto=formulario.cleaned_data['rut_adulto'],
+                p_nombre=formulario.cleaned_data['p_nombre'],
+                s_nombre=formulario.cleaned_data['s_nombre'],
+                p_apellido=formulario.cleaned_data['p_apellido'],
+                s_apellido=formulario.cleaned_data['s_apellido'],
+                direccion=formulario.cleaned_data['direccion'],
+                fecha_nacimiento=formulario.cleaned_data['fecha_nacimiento'],
+                correo_electronico=formulario.cleaned_data['correo_electronico'],
+                comprobante_domicilio=formulario.cleaned_data['comprobante_domicilio'],
+                comuna=formulario.cleaned_data['comuna'],
+                genero=formulario.cleaned_data['genero'],
+                telefono=formulario.cleaned_data['telefono'],
+                user=user  # Asignar el usuario al perfil de adultoMayor
+            )
+            adulto_mayor.save()  # Guardar el perfil en la base de datos
+
+            # Asignar al grupo "Adulto Mayor"
             group = Group.objects.get(name='Adulto Mayor')
             user.groups.add(group)
+
             return redirect("index")
         else:
             aux['form'] = formulario
 
-    return render(request,'registration/register.html',aux)
+    return render(request, 'registration/register.html', aux)
