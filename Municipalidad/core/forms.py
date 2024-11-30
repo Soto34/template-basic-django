@@ -59,3 +59,9 @@ class CustomUserAndAdultoMayorForm(UserCreationForm):
         ]
 
 
+class AdultoMayorForm(ModelForm):
+    
+    class Meta:
+        model = adultoMayor
+        exclude = ['user']
+

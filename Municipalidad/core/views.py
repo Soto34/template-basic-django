@@ -163,6 +163,8 @@ def adultoDelete(request, id):
     
     return redirect(to="detalleAdultos")
 
+
+"""
 def adultoUpdate(request, id):
     # Verificar permisos
     if not user_in_group(request.user, 'funcionario'):
@@ -201,6 +203,31 @@ def adultoUpdate(request, id):
     # Si es un GET, mostrar el formulario con los datos actuales
     form = CustomUserAndAdultoMayorForm(instance=adulto)
     return render(request, 'core/crud/update_adulto.html', {'form': form})
+
+
+"""
+
+def adultoUpdate(request,id):
+    # Verificar si el usuario tiene permiso (staff o pertenece al grupo 'admin')
+    if not user_in_group(request.user, 'funcionario'):
+        return HttpResponseForbidden("No tienes permisos para acceder a esta página.")
+    
+    adulto = adultoMayor.objects.get(id=id)
+    aux ={
+        'form' : AdultoMayorForm(instance=adulto)
+    }
+
+    if request.method == 'POST':
+        formulario = AdultoMayorForm(data=request.POST,instance=adulto)
+        if formulario.is_valid():
+            formulario.save()
+            aux['ms'] = 'adulto mayor modificado correctamente.'
+            return redirect(to="detalleAdultos")
+        else:
+            aux['form'] = formulario
+            aux['ms'] = 'el adulto mayor no ha sido modificado.'
+
+    return render(request,'core/crud/update_adulto.html',aux)
 
 def register(request):
     aux = {
