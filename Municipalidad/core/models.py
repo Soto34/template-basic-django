@@ -37,22 +37,6 @@ class adultoMayor(models.Model):
 
     
 
-class Instructor(models.Model):
-    rut_instructor = models.CharField(max_length=20, unique=True)  # Asegurarse de que no se repitan los RUT
-    p_nombre = models.CharField(max_length=20)
-    s_nombre = models.CharField(max_length=20, blank=True)  # Puede no haber segundo nombre
-    p_apellido = models.CharField(max_length=20)
-    s_apellido = models.CharField(max_length=20, blank=True)  # Puede no haber segundo apellido
-    fecha_nacimiento = models.DateField()  # Cambié a DateField para mejor manejo de fechas
-    correo_electronico = models.EmailField(max_length=100)  # Cambié a EmailField
-    comuna = models.ForeignKey(Comuna,on_delete=models.SET_NULL,null=True)
-    genero = models.ForeignKey(Genero, on_delete=models.SET_NULL, null=True)  # Relación con el modelo Genero
-    telefono = models.IntegerField(max_length=20)
-
-    def __str__(self):
-        return self.rut_instructor
-    
-
 class Taller(models.Model):
     nombre = models.CharField(max_length=100)
     cant_horas = models.IntegerField()  # Número de horas del taller
@@ -61,10 +45,11 @@ class Taller(models.Model):
     fecha_termino = models.DateTimeField()  # Fecha y hora de finalización del taller
     cant_min = models.IntegerField()  # Mínimo de participantes
     cant_max = models.IntegerField()  # Máximo de participantes
-    prom_evalua_taller = models.IntegerField()  # Promedio de evaluación del taller
+    integrantes = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.nombre
+    
 
 class InscripcionTaller(models.Model):
     adulto_mayor = models.ForeignKey(adultoMayor, on_delete=models.CASCADE)

@@ -96,6 +96,50 @@ def detalleTalleres(request):
     return render(request,'core/detalle_Talleres.html',aux)
 
 
+def inscribir_taller(request):
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        rut = request.POST.get('rut')
+        nombre = request.POST.get('name')
+        email = request.POST.get('email')
+        taller_id = request.POST.get('taller')
+
+        # Obtener el taller al que se está inscribiendo
+        try:
+            taller = Taller.objects.get(id=taller_id)
+        except Taller.DoesNotExist:
+            return render(request, 'core/mensaje.html', {'mensaje': 'Taller no encontrado.'})
+
+        # Verificar si el taller ya tiene el máximo de participantes
+        if taller.integrantes:
+            integrantes = taller.integrantes.split(',')
+        else:
+            integrantes = []
+
+        # Verificar si el taller tiene espacio
+        if len(integrantes) < taller.cant_max:
+            # Agregar el RUT del adulto mayor al campo 'integrantes'
+            if (rut in taller.integrantes):
+                return render(request, 'core/mensaje.html', {'mensaje': f'Ya estas en el taller {taller.nombre}!'})
+            else:
+                integrantes.append(rut)
+                taller.integrantes = ','.join(integrantes)
+                taller.save()
+
+            # Mensaje de éxito
+            return render(request, 'core/mensaje.html', {'mensaje': f'Inscripción exitosa a {taller.nombre}!'})
+        else:
+            # Si el taller ya está lleno
+            return render(request, 'core/mensaje.html', {'mensaje': f'El taller {taller.nombre} está lleno.'})
+
+    else:
+        # Si no es un POST, solo mostrar el formulario
+        talleres = Taller.objects.all()  # Lista de talleres
+        return render(request, 'core/index.html', {'lista': talleres})
+    
+def mensaje(request):
+    return render(request, 'core/mensaje.html')
+
 #Adultos
 def detalleAdultos(request):
     # Obtener todos los adultos mayores
@@ -164,48 +208,6 @@ def adultoDelete(request, id):
     return redirect(to="detalleAdultos")
 
 
-"""
-def adultoUpdate(request, id):
-    # Verificar permisos
-    if not user_in_group(request.user, 'funcionario'):
-        return HttpResponseForbidden("No tienes permisos para acceder a esta página.")
-    
-    try:
-        # Obtener el objeto adultoMayor
-        adulto = adultoMayor.objects.get(id=id)
-    except adultoMayor.DoesNotExist:
-        return HttpResponseNotFound("El adulto mayor no existe.")
-    
-    # Si el formulario es enviado (POST)
-    if request.method == 'POST':
-        form = CustomUserAndAdultoMayorForm(request.POST, request.FILES, instance=adulto)
-        if form.is_valid():
-            # Actualizar adultoMayor
-            adulto.rut_adulto = form.cleaned_data['rut_adulto']
-            adulto.p_nombre = form.cleaned_data['p_nombre']
-            adulto.s_nombre = form.cleaned_data.get('s_nombre', '')
-            adulto.p_apellido = form.cleaned_data['p_apellido']
-            adulto.s_apellido = form.cleaned_data.get('s_apellido', '')
-            adulto.direccion = form.cleaned_data['direccion']
-            adulto.fecha_nacimiento = form.cleaned_data['fecha_nacimiento']
-            adulto.correo_electronico = form.cleaned_data['correo_electronico']
-            adulto.comprobante_domicilio = form.cleaned_data.get('comprobante_domicilio', None)
-            adulto.comuna = form.cleaned_data['comuna']
-            adulto.genero = form.cleaned_data['genero']
-            adulto.telefono = form.cleaned_data['telefono']
-            adulto.save()
-
-            return redirect('detalleAdultos')  # Redirigir a la lista de adultos
-        else:
-            # Si el formulario no es válido, renderizarlo nuevamente con el mensaje de error
-            return render(request, 'core/crud/update_adulto.html', {'form': form, 'ms': 'Error en el formulario'})
-
-    # Si es un GET, mostrar el formulario con los datos actuales
-    form = CustomUserAndAdultoMayorForm(instance=adulto)
-    return render(request, 'core/crud/update_adulto.html', {'form': form})
-
-
-"""
 
 def adultoUpdate(request,id):
     # Verificar si el usuario tiene permiso (staff o pertenece al grupo 'admin')
