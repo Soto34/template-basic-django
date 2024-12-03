@@ -111,15 +111,13 @@ def inscribir_taller(request):
             return render(request, 'core/mensaje.html', {'mensaje': 'Taller no encontrado.'})
 
         # Verificar si el taller ya tiene el máximo de participantes
-        if taller.integrantes:
-            integrantes = taller.integrantes.split(',')
-        else:
-            integrantes = []
+        integrantes = (taller.integrantes or "").split(',')
 
         # Verificar si el taller tiene espacio
         if len(integrantes) < taller.cant_max:
             # Agregar el RUT del adulto mayor al campo 'integrantes'
-            if (rut in taller.integrantes):
+            taller.integrantes = ','.join(integrantes)
+            if rut in taller.integrantes:
                 return render(request, 'core/mensaje.html', {'mensaje': f'Ya estas en el taller {taller.nombre}!'})
             else:
                 integrantes.append(rut)

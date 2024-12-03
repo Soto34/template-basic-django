@@ -45,7 +45,8 @@ class Taller(models.Model):
     fecha_termino = models.DateTimeField()  # Fecha y hora de finalización del taller
     cant_min = models.IntegerField()  # Mínimo de participantes
     cant_max = models.IntegerField()  # Máximo de participantes
-    integrantes = models.TextField(blank=True, null=True)
+    integrantes = models.TextField(null=True, blank=True, default='')
+
 
     def __str__(self):
         return self.nombre
