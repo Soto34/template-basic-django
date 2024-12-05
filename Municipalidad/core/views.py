@@ -106,9 +106,10 @@ def inscribir_taller(request):
 
         # Obtener el taller al que se está inscribiendo
         try:
+            talleres = Taller.objects.all()  # Lista de talleres
             taller = Taller.objects.get(id=taller_id)
         except Taller.DoesNotExist:
-            return render(request, 'core/mensaje.html', {'mensaje': 'Taller no encontrado.'})
+            return render(request, 'core/index.html', {'mensajeAdvertencia': 'Taller no encontrado.', 'lista': talleres})
 
         # Verificar si el taller ya tiene el máximo de participantes
         integrantes = (taller.integrantes or "").split(',')
@@ -116,25 +117,25 @@ def inscribir_taller(request):
         # Verificar si el taller tiene espacio
         if len(integrantes) < taller.cant_max:
             # Agregar el RUT del adulto mayor al campo 'integrantes'
-            taller.integrantes = ','.join(integrantes)
-            if rut in taller.integrantes:
-                return render(request, 'core/mensaje.html', {'mensaje': f'Ya estas en el taller {taller.nombre}!'})
+            if rut in integrantes:
+                return render(request, 'core/index.html/', {'mensajeAviso': f'Ya estas en el taller {taller.nombre}!', 'lista': talleres})
             else:
                 integrantes.append(rut)
                 taller.integrantes = ','.join(integrantes)
                 taller.save()
 
             # Mensaje de éxito
-            return render(request, 'core/mensaje.html', {'mensaje': f'Inscripción exitosa a {taller.nombre}!'})
+            return render(request, 'core/index.html', {'mensajeExitoso': f'Inscripción exitosa a {taller.nombre}!', 'lista': talleres})
         else:
             # Si el taller ya está lleno
-            return render(request, 'core/mensaje.html', {'mensaje': f'El taller {taller.nombre} está lleno.'})
+            return render(request, 'core/index.html', {'mensajeAdvertencia': f'El taller {taller.nombre} está lleno.', 'lista': talleres})
 
     else:
         # Si no es un POST, solo mostrar el formulario
         talleres = Taller.objects.all()  # Lista de talleres
         return render(request, 'core/index.html', {'lista': talleres})
-    
+
+
 def mensaje(request):
     return render(request, 'core/mensaje.html')
 

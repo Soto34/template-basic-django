@@ -5,7 +5,7 @@ urlpatterns = [
     path('',index,name='index'),
     path('register',register,name='register'),
     path('inscribir_taller/', inscribir_taller, name='inscribir_taller'),
-     path('mensaje/', mensaje, name='mensaje'),  
+
 
     #crud adultos
     path('detalleAdultos',detalleAdultos,name='detalleAdultos'),
